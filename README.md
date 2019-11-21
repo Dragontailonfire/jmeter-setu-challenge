@@ -11,5 +11,6 @@ API Automation challenge
     2. [jackson-databind](https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind/2.10.1)
     3. [jackson-annotations](https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations/2.10.1)
 
-##References
-1. Java flavour of JWT taken from [here](https://github.com/auth0/java-jwt)
+## References
+1. Challenge repo - https://gitlab.com/setu-lobby/test-automation-test/blob/master/README.md
+2. Java flavour of JWT taken from [here](https://github.com/auth0/java-jwt)
