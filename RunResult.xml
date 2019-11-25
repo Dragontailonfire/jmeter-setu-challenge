@@ -1,0 +1,766 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testResults version="1.2">
+<httpSample t="2616" it="0" lt="2616" ct="1849" ts="1574706329936" s="true" lb="create webhook token" rc="201" rm="Created" tn="Setu API 1-1" dt="text" de="" by="628" sby="309" sc="1" ec="0" ng="1" na="1" hn="CommandCenter2">
+  <responseHeader class="java.lang.String">HTTP/1.1 201 Created
+Server: nginx/1.10.3
+Content-Type: application/json
+Transfer-Encoding: chunked
+Cache-Control: no-cache, private
+Date: Mon, 25 Nov 2019 18:25:32 GMT
+X-RateLimit-Limit: 100
+X-RateLimit-Remaining: 98
+</responseHeader>
+  <requestHeader class="java.lang.String">Connection: keep-alive
+Content-Length: 139
+Content-Type: text/plain
+Host: webhook.site
+User-Agent: Apache-HttpClient/4.5.10 (Java/1.8.0_201)
+</requestHeader>
+  <responseData class="java.lang.String">{&quot;redirect&quot;:false,&quot;alias&quot;:null,&quot;actions&quot;:null,&quot;cors&quot;:false,&quot;timeout&quot;:0,&quot;premium&quot;:false,&quot;uuid&quot;:&quot;880175d7-1aa6-4a75-92e0-de77ac79c4fc&quot;,&quot;ip&quot;:&quot;42.109.145.36&quot;,&quot;user_agent&quot;:&quot;Apache-HttpClient\/4.5.10 (Java\/1.8.0_201)&quot;,&quot;default_content&quot;:&quot;&quot;,&quot;default_status&quot;:200,&quot;default_content_type&quot;:&quot;text\/plain&quot;,&quot;premium_expires_at&quot;:null,&quot;created_at&quot;:&quot;2019-11-25 18:25:32&quot;,&quot;updated_at&quot;:&quot;2019-11-25 18:25:32&quot;}</responseData>
+  <responseFile class="java.lang.String"></responseFile>
+  <cookies class="java.lang.String"></cookies>
+  <method class="java.lang.String">POST</method>
+  <queryString class="java.lang.String">{&#xd;
+  &quot;default_status&quot;: 200,&#xd;
+  &quot;default_content&quot;: &quot;Payment validations!&quot;,&#xd;
+  &quot;default_content_type&quot;: &quot;application/json&quot;,&#xd;
+  &quot;timeout&quot;: 0&#xd;
+}</queryString>
+  <java.net.URL>https://webhook.site/token</java.net.URL>
+</httpSample>
+<httpSample t="20" it="0" lt="19" ct="1" ts="1574706332557" s="true" lb="onboard end-point" rc="200" rm="OK" tn="Setu API 1-1" dt="text" de="utf-8" by="392" sby="294" sc="1" ec="0" ng="1" na="1" hn="CommandCenter2">
+  <responseHeader class="java.lang.String">HTTP/1.1 200 OK
+X-Powered-By: Express
+Content-Type: application/json; charset=utf-8
+Content-Length: 179
+ETag: W/&quot;b3-LPFDh38beAAZwXvPtf5H/CehKVg&quot;
+Date: Mon, 25 Nov 2019 18:25:32 GMT
+Connection: keep-alive
+</responseHeader>
+  <requestHeader class="java.lang.String">Connection: keep-alive
+Content-Type: application/json
+Content-Length: 110
+Host: localhost:3000
+User-Agent: Apache-HttpClient/4.5.10 (Java/1.8.0_201)
+</requestHeader>
+  <responseData class="java.lang.String">{&quot;message&quot;:&quot;success&quot;,&quot;data&quot;:{&quot;callbackURL&quot;:&quot;https://webhook.site/880175d7-1aa6-4a75-92e0-de77ac79c4fc&quot;,&quot;name&quot;:&quot;JmeterTestPayer&quot;,&quot;jwtSecret&quot;:&quot;SMYIMV-4FPLXS-LZ7OED-BADIV6&quot;,&quot;id&quot;:41}}</responseData>
+  <responseFile class="java.lang.String"></responseFile>
+  <cookies class="java.lang.String"></cookies>
+  <method class="java.lang.String">POST</method>
+  <queryString class="java.lang.String">{&#xd;
+	&quot;callbackURL&quot;: &quot;https://webhook.site/880175d7-1aa6-4a75-92e0-de77ac79c4fc&quot;,&#xd;
+	&quot;name&quot;: &quot;JmeterTestPayer&quot;&#xd;
+}</queryString>
+  <java.net.URL>http://localhost:3000/api/onboard</java.net.URL>
+</httpSample>
+<sample t="47" it="0" lt="0" ct="0" ts="1574706332578" s="true" lb="JSR223 Sampler_Calculate JWT token" rc="200" rm="OK" tn="Setu API 1-1" dt="text" de="" by="126" sby="0" sc="1" ec="0" ng="1" na="1" hn="CommandCenter2">
+  <responseHeader class="java.lang.String"></responseHeader>
+  <requestHeader class="java.lang.String"></requestHeader>
+  <responseData class="java.lang.String">JWTToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9.phn04dd33tfOgIni6uMwy-oPwgI2Xgqz96p0jVrxQXc
+Payer ID = 41</responseData>
+  <responseFile class="java.lang.String"></responseFile>
+  <samplerData class="java.lang.String">import com.auth0.jwt.JWT
+import com.auth0.jwt.algorithms.Algorithm
+
+try
+{
+	//This variable contains the jwtSecret extracted from the onboard response
+	def secret = vars.get(&quot;jwtSecret&quot;)
+
+	//create the JWT Token with the secret
+	Algorithm algorithm = Algorithm.HMAC256(secret)
+	def token = JWT.create().withIssuer(&quot;auth0&quot;).sign(algorithm)
+
+	//generated JWT Token is assigned to variable to used throughout the execution.
+	vars.put(&quot;jwtToken&quot;, token)
+
+	//The payer ID extracted from the onboard response is assigned to variable to be used throughout the execution
+	vars.put(&quot;PAYER-ID&quot;, vars.get(&quot;payerId&quot;))
+
+	//The JWT token and Payer ID is returned as response of this sampler
+	SampleResult.setResponseData(&quot;JWTToken = &quot; + vars.get(&quot;jwtToken&quot;) + &quot;\nPayer ID = &quot; + vars.get(&quot;payerId&quot;))
+}
+catch (Exception e)
+{
+	SampleResult.setSuccessful(false)
+	SampleResult.setResponseData(&quot;Exception details = &quot; + e)
+	SampleResult.setResponseMessage(&quot;JWT Token generation not successful. See response data for more details&quot;)
+}
+</samplerData>
+</sample>
+<httpSample t="7" it="0" lt="7" ct="0" ts="1574706332626" s="true" lb="get bills end-point" rc="200" rm="OK" tn="Setu API 1-1" dt="text" de="utf-8" by="462" sby="299" sc="1" ec="0" ng="1" na="1" hn="CommandCenter2">
+  <responseHeader class="java.lang.String">HTTP/1.1 200 OK
+X-Powered-By: Express
+Content-Type: application/json; charset=utf-8
+Content-Length: 249
+ETag: W/&quot;f9-yOEIwt6xpCqueRMxBLLFmz39Zi4&quot;
+Date: Mon, 25 Nov 2019 18:25:32 GMT
+Connection: keep-alive
+</responseHeader>
+  <requestHeader class="java.lang.String">Connection: keep-alive
+Content-Type: application/json
+PAYER-ID: 41
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9.phn04dd33tfOgIni6uMwy-oPwgI2Xgqz96p0jVrxQXc
+Host: localhost:3000
+User-Agent: Apache-HttpClient/4.5.10 (Java/1.8.0_201)
+</requestHeader>
+  <responseData class="java.lang.String">{&quot;message&quot;:&quot;success&quot;,&quot;data&quot;:{&quot;bills&quot;:[{&quot;id&quot;:3968170,&quot;amount&quot;:734,&quot;billerName&quot;:&quot;AU SFB&quot;,&quot;ifsc&quot;:&quot;SETU000052&quot;,&quot;accountNumber&quot;:&quot;1025971587752&quot;},{&quot;id&quot;:7207540,&quot;amount&quot;:138,&quot;billerName&quot;:&quot;CapitalFloat&quot;,&quot;ifsc&quot;:&quot;SETU000041&quot;,&quot;accountNumber&quot;:&quot;105828773801&quot;}]}}</responseData>
+  <responseFile class="java.lang.String"></responseFile>
+  <cookies class="java.lang.String"></cookies>
+  <method class="java.lang.String">GET</method>
+  <queryString class="java.lang.String"></queryString>
+  <java.net.URL>http://localhost:3000/api/bills</java.net.URL>
+</httpSample>
+<sample t="26" it="0" lt="0" ct="0" ts="1574706332647" s="true" lb="JSR223 Sampler_Bill Information" rc="200" rm="OK" tn="Setu API 1-1" dt="text" de="" by="167" sby="0" sc="1" ec="0" ng="1" na="1" hn="CommandCenter2">
+  <responseHeader class="java.lang.String"></responseHeader>
+  <requestHeader class="java.lang.String"></requestHeader>
+  <responseData class="java.lang.String">--------------------- Information for Bill # 2 ---------------------
+ID = 7207540
+Amount = 138
+BillerName = CapitalFloat
+IFSC = SETU000041
+AccountNumber = 105828773801</responseData>
+  <responseFile class="java.lang.String"></responseFile>
+  <samplerData class="java.lang.String">def count = vars.get(&quot;counter&quot;)
+
+//Will extract the bill info based on the counter and assigns to temp variables
+def billNumber = count
+def id = vars.get(&quot;bill_id_&quot; + count)
+def amount = vars.get(&quot;bill_amount_&quot; + count)
+def billerName = vars.get(&quot;bill_billerName_&quot; + count)
+def ifsc = vars.get(&quot;bill_ifsc_&quot; + count)
+def accountNumber = vars.get(&quot;bill_accountNumber_&quot; + count)
+
+//Decrease the counter
+count--
+
+//Assigns the bill details to variables to be used for bill payment and for subsequent verifications
+vars.put(&quot;billNumber&quot;, billNumber)
+vars.put(&quot;counter&quot;, count)
+vars.put(&quot;amount&quot;, amount)
+vars.put(&quot;ifsc&quot;, ifsc)
+vars.put(&quot;accountNumber&quot;, accountNumber)
+
+//Bill Information is returned as response of this sampler
+SampleResult.setResponseData(&quot;--------------------- Information for Bill # &quot; + billNumber + &quot; ---------------------\nID = &quot; + id + &quot;\nAmount = &quot; + amount + &quot;\nBillerName = &quot; + billerName + &quot;\nIFSC = &quot; + ifsc + &quot;\nAccountNumber = &quot; + accountNumber)
+
+</samplerData>
+</sample>
+<httpSample t="9" it="0" lt="9" ct="0" ts="1574706332675" s="true" lb="pay end-point for Bill 2" rc="200" rm="OK" tn="Setu API 1-1" dt="text" de="utf-8" by="269" sby="397" sc="1" ec="0" ng="1" na="1" hn="CommandCenter2">
+  <responseHeader class="java.lang.String">HTTP/1.1 200 OK
+X-Powered-By: Express
+Content-Type: application/json; charset=utf-8
+Content-Length: 57
+ETag: W/&quot;39-Uf5ULCJ+BayMborUFU4cjCbVQY0&quot;
+Date: Mon, 25 Nov 2019 18:25:32 GMT
+Connection: keep-alive
+</responseHeader>
+  <requestHeader class="java.lang.String">Connection: keep-alive
+Content-Type: application/json
+PAYER-ID: 41
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9.phn04dd33tfOgIni6uMwy-oPwgI2Xgqz96p0jVrxQXc
+Content-Length: 79
+Host: localhost:3000
+User-Agent: Apache-HttpClient/4.5.10 (Java/1.8.0_201)
+</requestHeader>
+  <responseData class="java.lang.String">{&quot;message&quot;:&quot;success&quot;,&quot;data&quot;:{&quot;transactionId&quot;:3662300213}}</responseData>
+  <responseFile class="java.lang.String"></responseFile>
+  <cookies class="java.lang.String"></cookies>
+  <method class="java.lang.String">POST</method>
+  <queryString class="java.lang.String">{&#xd;
+	&quot;ifsc&quot;: &quot;SETU000041&quot;,&#xd;
+	&quot;accountNumber&quot;: &quot;105828773801&quot;,&#xd;
+	&quot;amount&quot;: 138&#xd;
+}</queryString>
+  <java.net.URL>http://localhost:3000/api/pay</java.net.URL>
+</httpSample>
+<httpSample t="1850" it="0" lt="1850" ct="1235" ts="1574706334185" s="true" lb="webhook get end-point for Bill 2" rc="200" rm="OK" tn="Setu API 1-1" dt="text" de="" by="1130" sby="168" sc="1" ec="0" ng="1" na="1" hn="CommandCenter2">
+  <responseHeader class="java.lang.String">HTTP/1.1 200 OK
+Server: nginx/1.10.3
+Content-Type: application/json
+Transfer-Encoding: chunked
+Vary: Accept-Encoding
+Cache-Control: no-cache, private
+Date: Mon, 25 Nov 2019 18:25:36 GMT
+X-RateLimit-Limit: 100
+X-RateLimit-Remaining: 97
+</responseHeader>
+  <requestHeader class="java.lang.String">Connection: keep-alive
+Host: webhook.site
+User-Agent: Apache-HttpClient/4.5.10 (Java/1.8.0_201)
+</requestHeader>
+  <responseData class="java.lang.String">{&quot;data&quot;:[{&quot;uuid&quot;:&quot;b942a6f2-f8c7-4e4f-8974-7fceb6687826&quot;,&quot;token_id&quot;:&quot;880175d7-1aa6-4a75-92e0-de77ac79c4fc&quot;,&quot;ip&quot;:&quot;42.109.145.36&quot;,&quot;hostname&quot;:&quot;webhook.site&quot;,&quot;method&quot;:&quot;POST&quot;,&quot;user_agent&quot;:&quot;axios\/0.19.0&quot;,&quot;content&quot;:&quot;{\&quot;success\&quot;:true,\&quot;transactionId\&quot;:3662300213,\&quot;bill\&quot;:{\&quot;id\&quot;:7207540,\&quot;billerName\&quot;:\&quot;CapitalFloat\&quot;,\&quot;amount\&quot;:138,\&quot;accountNumber\&quot;:\&quot;105828773801\&quot;,\&quot;ifsc\&quot;:\&quot;SETU000041\&quot;}}&quot;,&quot;query&quot;:null,&quot;headers&quot;:{&quot;x-forwarded-for&quot;:[&quot;42.109.145.36&quot;],&quot;connection&quot;:[&quot;close&quot;],&quot;host&quot;:[&quot;webhook.site&quot;],&quot;content-length&quot;:[&quot;157&quot;],&quot;user-agent&quot;:[&quot;axios\/0.19.0&quot;],&quot;content-type&quot;:[&quot;application\/json;charset=utf-8&quot;],&quot;accept&quot;:[&quot;application\/json, text\/plain, *\/*&quot;]},&quot;url&quot;:&quot;http:\/\/webhook.site\/880175d7-1aa6-4a75-92e0-de77ac79c4fc&quot;,&quot;created_at&quot;:&quot;2019-11-25 18:25:34&quot;,&quot;updated_at&quot;:&quot;2019-11-25 18:25:34&quot;}],&quot;total&quot;:1,&quot;per_page&quot;:50,&quot;current_page&quot;:1,&quot;is_last_page&quot;:true,&quot;from&quot;:1,&quot;to&quot;:1}</responseData>
+  <responseFile class="java.lang.String"></responseFile>
+  <cookies class="java.lang.String"></cookies>
+  <method class="java.lang.String">GET</method>
+  <queryString class="java.lang.String"></queryString>
+  <java.net.URL>https://webhook.site/token/880175d7-1aa6-4a75-92e0-de77ac79c4fc/requests</java.net.URL>
+</httpSample>
+<httpSample t="611" it="0" lt="611" ct="0" ts="1574706336037" s="true" lb="webhook delete end-point for Bill 2" rc="200" rm="OK" tn="Setu API 1-1" dt="text" de="" by="271" sby="253" sc="1" ec="0" ng="1" na="1" hn="CommandCenter2">
+  <responseHeader class="java.lang.String">HTTP/1.1 200 OK
+Server: nginx/1.10.3
+Content-Type: application/json
+Transfer-Encoding: chunked
+Vary: Accept-Encoding
+Cache-Control: no-cache, private
+Date: Mon, 25 Nov 2019 18:25:36 GMT
+X-RateLimit-Limit: 100
+X-RateLimit-Remaining: 98
+</responseHeader>
+  <requestHeader class="java.lang.String">Connection: keep-alive
+Content-Length: 0
+Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+Host: webhook.site
+User-Agent: Apache-HttpClient/4.5.10 (Java/1.8.0_201)
+</requestHeader>
+  <responseData class="java.lang.String">{&quot;status&quot;:true}</responseData>
+  <responseFile class="java.lang.String"></responseFile>
+  <cookies class="java.lang.String"></cookies>
+  <method class="java.lang.String">DELETE</method>
+  <queryString class="java.lang.String"></queryString>
+  <java.net.URL>https://webhook.site/token/880175d7-1aa6-4a75-92e0-de77ac79c4fc/request</java.net.URL>
+</httpSample>
+<sample t="35" it="0" lt="0" ct="0" ts="1574706336649" s="true" lb="JSR223 Sampler_Callback validations" rc="200" rm="OK" tn="Setu API 1-1" dt="text" de="" by="118" sby="0" sc="1" ec="0" ng="1" na="1" hn="CommandCenter2">
+  <responseHeader class="java.lang.String"></responseHeader>
+  <requestHeader class="java.lang.String"></requestHeader>
+  <responseData class="java.lang.String">
+Transaction IDs are matching. 
+Pay response Transaction ID = 3662300213
+Callback response Transaction ID = 3662300213</responseData>
+  <responseFile class="java.lang.String"></responseFile>
+  <samplerData class="java.lang.String">//gets the pay and callback response transaction IDs
+def pay_transactionId = vars.get(&quot;pay_transactionId&quot;)
+def callback_transactionId = vars.get(&quot;callback_transactionId&quot;)
+
+//these are used to store the sampler response message
+StringBuilder successMessage = new StringBuilder()
+StringBuilder errorMessage = new StringBuilder()
+
+//flag to evaluate the comparison
+def errorFlag = false
+
+//compare the transaction IDs
+if (pay_transactionId.equals(callback_transactionId))
+{
+	successMessage.append(&quot;\nTransaction IDs are matching. \nPay response Transaction ID = &quot; + pay_transactionId + &quot;\nCallback response Transaction ID = &quot; + callback_transactionId)
+} else
+{
+	errorFlag = true
+	errorMessage.append(&quot;\nTransaction IDs are NOT matching! \nPay response Transaction ID = &quot; + pay_transactionId + &quot;\nCallback response Transaction ID = &quot; + callback_transactionId)
+}
+
+//compare the Bill info details with the callback response details
+
+if (errorFlag)
+{
+	SampleResult.setSuccessful(false)
+	SampleResult.setResponseData(errorMessage.toString())
+	SampleResult.setResponseMessage(&quot;Callback validation failed. See response data for more details&quot;)
+} else 
+{
+	SampleResult.setResponseData(successMessage.toString())	
+}
+
+</samplerData>
+</sample>
+<sample t="1" it="0" lt="0" ct="0" ts="1574706336686" s="true" lb="JSR223 Sampler_Bill Information" rc="200" rm="OK" tn="Setu API 1-1" dt="text" de="" by="162" sby="0" sc="1" ec="0" ng="1" na="1" hn="CommandCenter2">
+  <responseHeader class="java.lang.String"></responseHeader>
+  <requestHeader class="java.lang.String"></requestHeader>
+  <responseData class="java.lang.String">--------------------- Information for Bill # 1 ---------------------
+ID = 3968170
+Amount = 734
+BillerName = AU SFB
+IFSC = SETU000052
+AccountNumber = 1025971587752</responseData>
+  <responseFile class="java.lang.String"></responseFile>
+  <samplerData class="java.lang.String">def count = vars.get(&quot;counter&quot;)
+
+//Will extract the bill info based on the counter and assigns to temp variables
+def billNumber = count
+def id = vars.get(&quot;bill_id_&quot; + count)
+def amount = vars.get(&quot;bill_amount_&quot; + count)
+def billerName = vars.get(&quot;bill_billerName_&quot; + count)
+def ifsc = vars.get(&quot;bill_ifsc_&quot; + count)
+def accountNumber = vars.get(&quot;bill_accountNumber_&quot; + count)
+
+//Decrease the counter
+count--
+
+//Assigns the bill details to variables to be used for bill payment and for subsequent verifications
+vars.put(&quot;billNumber&quot;, billNumber)
+vars.put(&quot;counter&quot;, count)
+vars.put(&quot;amount&quot;, amount)
+vars.put(&quot;ifsc&quot;, ifsc)
+vars.put(&quot;accountNumber&quot;, accountNumber)
+
+//Bill Information is returned as response of this sampler
+SampleResult.setResponseData(&quot;--------------------- Information for Bill # &quot; + billNumber + &quot; ---------------------\nID = &quot; + id + &quot;\nAmount = &quot; + amount + &quot;\nBillerName = &quot; + billerName + &quot;\nIFSC = &quot; + ifsc + &quot;\nAccountNumber = &quot; + accountNumber)
+
+</samplerData>
+</sample>
+<httpSample t="11" it="0" lt="11" ct="2" ts="1574706336688" s="true" lb="pay end-point for Bill 1" rc="200" rm="OK" tn="Setu API 1-1" dt="text" de="utf-8" by="269" sby="398" sc="1" ec="0" ng="1" na="1" hn="CommandCenter2">
+  <responseHeader class="java.lang.String">HTTP/1.1 200 OK
+X-Powered-By: Express
+Content-Type: application/json; charset=utf-8
+Content-Length: 57
+ETag: W/&quot;39-livLUPqv+L/Ib+MUrSLOGCIsKtM&quot;
+Date: Mon, 25 Nov 2019 18:25:36 GMT
+Connection: keep-alive
+</responseHeader>
+  <requestHeader class="java.lang.String">Connection: keep-alive
+Content-Type: application/json
+PAYER-ID: 41
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9.phn04dd33tfOgIni6uMwy-oPwgI2Xgqz96p0jVrxQXc
+Content-Length: 80
+Host: localhost:3000
+User-Agent: Apache-HttpClient/4.5.10 (Java/1.8.0_201)
+</requestHeader>
+  <responseData class="java.lang.String">{&quot;message&quot;:&quot;success&quot;,&quot;data&quot;:{&quot;transactionId&quot;:5470543391}}</responseData>
+  <responseFile class="java.lang.String"></responseFile>
+  <cookies class="java.lang.String"></cookies>
+  <method class="java.lang.String">POST</method>
+  <queryString class="java.lang.String">{&#xd;
+	&quot;ifsc&quot;: &quot;SETU000052&quot;,&#xd;
+	&quot;accountNumber&quot;: &quot;1025971587752&quot;,&#xd;
+	&quot;amount&quot;: 734&#xd;
+}</queryString>
+  <java.net.URL>http://localhost:3000/api/pay</java.net.URL>
+</httpSample>
+<httpSample t="1931" it="0" lt="1931" ct="1317" ts="1574706338200" s="true" lb="webhook get end-point for Bill 1" rc="200" rm="OK" tn="Setu API 1-1" dt="text" de="" by="1125" sby="168" sc="1" ec="0" ng="1" na="1" hn="CommandCenter2">
+  <responseHeader class="java.lang.String">HTTP/1.1 200 OK
+Server: nginx/1.10.3
+Content-Type: application/json
+Transfer-Encoding: chunked
+Vary: Accept-Encoding
+Cache-Control: no-cache, private
+Date: Mon, 25 Nov 2019 18:25:40 GMT
+X-RateLimit-Limit: 100
+X-RateLimit-Remaining: 96
+</responseHeader>
+  <requestHeader class="java.lang.String">Connection: keep-alive
+Host: webhook.site
+User-Agent: Apache-HttpClient/4.5.10 (Java/1.8.0_201)
+</requestHeader>
+  <responseData class="java.lang.String">{&quot;data&quot;:[{&quot;uuid&quot;:&quot;168c798d-fa0e-4e0f-83e2-e79fc430c749&quot;,&quot;token_id&quot;:&quot;880175d7-1aa6-4a75-92e0-de77ac79c4fc&quot;,&quot;ip&quot;:&quot;42.109.145.36&quot;,&quot;hostname&quot;:&quot;webhook.site&quot;,&quot;method&quot;:&quot;POST&quot;,&quot;user_agent&quot;:&quot;axios\/0.19.0&quot;,&quot;content&quot;:&quot;{\&quot;success\&quot;:true,\&quot;transactionId\&quot;:5470543391,\&quot;bill\&quot;:{\&quot;id\&quot;:3968170,\&quot;billerName\&quot;:\&quot;AU SFB\&quot;,\&quot;amount\&quot;:734,\&quot;accountNumber\&quot;:\&quot;1025971587752\&quot;,\&quot;ifsc\&quot;:\&quot;SETU000052\&quot;}}&quot;,&quot;query&quot;:null,&quot;headers&quot;:{&quot;x-forwarded-for&quot;:[&quot;42.109.145.36&quot;],&quot;connection&quot;:[&quot;close&quot;],&quot;host&quot;:[&quot;webhook.site&quot;],&quot;content-length&quot;:[&quot;152&quot;],&quot;user-agent&quot;:[&quot;axios\/0.19.0&quot;],&quot;content-type&quot;:[&quot;application\/json;charset=utf-8&quot;],&quot;accept&quot;:[&quot;application\/json, text\/plain, *\/*&quot;]},&quot;url&quot;:&quot;http:\/\/webhook.site\/880175d7-1aa6-4a75-92e0-de77ac79c4fc&quot;,&quot;created_at&quot;:&quot;2019-11-25 18:25:38&quot;,&quot;updated_at&quot;:&quot;2019-11-25 18:25:38&quot;}],&quot;total&quot;:1,&quot;per_page&quot;:50,&quot;current_page&quot;:1,&quot;is_last_page&quot;:true,&quot;from&quot;:1,&quot;to&quot;:1}</responseData>
+  <responseFile class="java.lang.String"></responseFile>
+  <cookies class="java.lang.String"></cookies>
+  <method class="java.lang.String">GET</method>
+  <queryString class="java.lang.String"></queryString>
+  <java.net.URL>https://webhook.site/token/880175d7-1aa6-4a75-92e0-de77ac79c4fc/requests</java.net.URL>
+</httpSample>
+<httpSample t="613" it="0" lt="613" ct="0" ts="1574706340133" s="true" lb="webhook delete end-point for Bill 1" rc="200" rm="OK" tn="Setu API 1-1" dt="text" de="" by="271" sby="253" sc="1" ec="0" ng="1" na="1" hn="CommandCenter2">
+  <responseHeader class="java.lang.String">HTTP/1.1 200 OK
+Server: nginx/1.10.3
+Content-Type: application/json
+Transfer-Encoding: chunked
+Vary: Accept-Encoding
+Cache-Control: no-cache, private
+Date: Mon, 25 Nov 2019 18:25:40 GMT
+X-RateLimit-Limit: 100
+X-RateLimit-Remaining: 97
+</responseHeader>
+  <requestHeader class="java.lang.String">Connection: keep-alive
+Content-Length: 0
+Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+Host: webhook.site
+User-Agent: Apache-HttpClient/4.5.10 (Java/1.8.0_201)
+</requestHeader>
+  <responseData class="java.lang.String">{&quot;status&quot;:true}</responseData>
+  <responseFile class="java.lang.String"></responseFile>
+  <cookies class="java.lang.String"></cookies>
+  <method class="java.lang.String">DELETE</method>
+  <queryString class="java.lang.String"></queryString>
+  <java.net.URL>https://webhook.site/token/880175d7-1aa6-4a75-92e0-de77ac79c4fc/request</java.net.URL>
+</httpSample>
+<sample t="1" it="0" lt="0" ct="0" ts="1574706340747" s="true" lb="JSR223 Sampler_Callback validations" rc="200" rm="OK" tn="Setu API 1-1" dt="text" de="" by="118" sby="0" sc="1" ec="0" ng="1" na="1" hn="CommandCenter2">
+  <responseHeader class="java.lang.String"></responseHeader>
+  <requestHeader class="java.lang.String"></requestHeader>
+  <responseData class="java.lang.String">
+Transaction IDs are matching. 
+Pay response Transaction ID = 5470543391
+Callback response Transaction ID = 5470543391</responseData>
+  <responseFile class="java.lang.String"></responseFile>
+  <samplerData class="java.lang.String">//gets the pay and callback response transaction IDs
+def pay_transactionId = vars.get(&quot;pay_transactionId&quot;)
+def callback_transactionId = vars.get(&quot;callback_transactionId&quot;)
+
+//these are used to store the sampler response message
+StringBuilder successMessage = new StringBuilder()
+StringBuilder errorMessage = new StringBuilder()
+
+//flag to evaluate the comparison
+def errorFlag = false
+
+//compare the transaction IDs
+if (pay_transactionId.equals(callback_transactionId))
+{
+	successMessage.append(&quot;\nTransaction IDs are matching. \nPay response Transaction ID = &quot; + pay_transactionId + &quot;\nCallback response Transaction ID = &quot; + callback_transactionId)
+} else
+{
+	errorFlag = true
+	errorMessage.append(&quot;\nTransaction IDs are NOT matching! \nPay response Transaction ID = &quot; + pay_transactionId + &quot;\nCallback response Transaction ID = &quot; + callback_transactionId)
+}
+
+//compare the Bill info details with the callback response details
+
+if (errorFlag)
+{
+	SampleResult.setSuccessful(false)
+	SampleResult.setResponseData(errorMessage.toString())
+	SampleResult.setResponseMessage(&quot;Callback validation failed. See response data for more details&quot;)
+} else 
+{
+	SampleResult.setResponseData(successMessage.toString())	
+}
+
+</samplerData>
+</sample>
+<httpSample t="7" it="0" lt="7" ct="3" ts="1574706340750" s="true" lb="onboard_error_400" rc="400" rm="Bad Request" tn="Setu API 1-1" dt="text" de="utf-8" by="243" sby="264" sc="1" ec="0" ng="1" na="1" hn="CommandCenter2">
+  <assertionResult>
+    <name>Response Assertion - Response Code</name>
+    <failure>false</failure>
+    <error>false</error>
+  </assertionResult>
+  <assertionResult>
+    <name>JSON Assertion - error message</name>
+    <failure>false</failure>
+    <error>false</error>
+    <failureMessage></failureMessage>
+  </assertionResult>
+  <responseHeader class="java.lang.String">HTTP/1.1 400 Bad Request
+X-Powered-By: Express
+Content-Type: application/json; charset=utf-8
+Content-Length: 22
+ETag: W/&quot;16-wXSvYNKEhT++mz74Xq/Mij9HseU&quot;
+Date: Mon, 25 Nov 2019 18:25:40 GMT
+Connection: keep-alive
+</responseHeader>
+  <requestHeader class="java.lang.String">Connection: keep-alive
+Content-Type: application/json
+Content-Length: 81
+Host: localhost:3000
+User-Agent: Apache-HttpClient/4.5.10 (Java/1.8.0_201)
+</requestHeader>
+  <responseData class="java.lang.String">{&quot;error&quot;:&quot;data error&quot;}</responseData>
+  <responseFile class="java.lang.String"></responseFile>
+  <cookies class="java.lang.String"></cookies>
+  <method class="java.lang.String">POST</method>
+  <queryString class="java.lang.String">{&#xd;
+	&quot;callBackURL&quot;: &quot;http://localhost:3000/api/test&quot;,&#xd;
+	&quot;name&quot;: &quot;ErrorPayer400&quot;&#xd;
+}</queryString>
+  <java.net.URL>http://localhost:3000/api/onboard</java.net.URL>
+</httpSample>
+<httpSample t="5" it="0" lt="5" ct="0" ts="1574706340760" s="true" lb="onboard_error_404" rc="404" rm="Not Found" tn="Setu API 1-1" dt="text" de="utf-8" by="399" sby="263" sc="1" ec="0" ng="1" na="1" hn="CommandCenter2">
+  <assertionResult>
+    <name>Response Assertion - Response Code</name>
+    <failure>false</failure>
+    <error>false</error>
+  </assertionResult>
+  <responseHeader class="java.lang.String">HTTP/1.1 404 Not Found
+X-Powered-By: Express
+Content-Security-Policy: default-src &apos;none&apos;
+X-Content-Type-Options: nosniff
+Content-Type: text/html; charset=utf-8
+Content-Length: 150
+Date: Mon, 25 Nov 2019 18:25:40 GMT
+Connection: keep-alive
+</responseHeader>
+  <requestHeader class="java.lang.String">Connection: keep-alive
+Content-Type: application/json
+Content-Length: 81
+Host: localhost:3000
+User-Agent: Apache-HttpClient/4.5.10 (Java/1.8.0_201)
+</requestHeader>
+  <responseData class="java.lang.String">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;title&gt;Error&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;pre&gt;Cannot POST /api/onbord&lt;/pre&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</responseData>
+  <responseFile class="java.lang.String"></responseFile>
+  <cookies class="java.lang.String"></cookies>
+  <method class="java.lang.String">POST</method>
+  <queryString class="java.lang.String">{&#xd;
+	&quot;callBackURL&quot;: &quot;http://localhost:3000/api/test&quot;,&#xd;
+	&quot;name&quot;: &quot;ErrorPayer404&quot;&#xd;
+}</queryString>
+  <java.net.URL>http://localhost:3000/api/onbord</java.net.URL>
+</httpSample>
+<httpSample t="10" it="0" lt="10" ct="0" ts="1574706340766" s="true" lb="pay_Amount mismatch" rc="200" rm="OK" tn="Setu API 1-1" dt="text" de="utf-8" by="269" sby="399" sc="1" ec="0" ng="1" na="1" hn="CommandCenter2">
+  <responseHeader class="java.lang.String">HTTP/1.1 200 OK
+X-Powered-By: Express
+Content-Type: application/json; charset=utf-8
+Content-Length: 57
+ETag: W/&quot;39-+Ncj6wVJLLuaC9Yx8feByLmOlQM&quot;
+Date: Mon, 25 Nov 2019 18:25:40 GMT
+Connection: keep-alive
+</responseHeader>
+  <requestHeader class="java.lang.String">Connection: keep-alive
+Content-Type: application/json
+PAYER-ID: 41
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9.phn04dd33tfOgIni6uMwy-oPwgI2Xgqz96p0jVrxQXc
+Content-Length: 81
+Host: localhost:3000
+User-Agent: Apache-HttpClient/4.5.10 (Java/1.8.0_201)
+</requestHeader>
+  <responseData class="java.lang.String">{&quot;message&quot;:&quot;success&quot;,&quot;data&quot;:{&quot;transactionId&quot;:9791065814}}</responseData>
+  <responseFile class="java.lang.String"></responseFile>
+  <cookies class="java.lang.String"></cookies>
+  <method class="java.lang.String">POST</method>
+  <queryString class="java.lang.String">{&#xd;
+	&quot;ifsc&quot;: &quot;SETU000052&quot;,&#xd;
+	&quot;accountNumber&quot;: &quot;1025971587752&quot;,&#xd;
+	&quot;amount&quot;: 1001&#xd;
+}</queryString>
+  <java.net.URL>http://localhost:3000/api/pay</java.net.URL>
+</httpSample>
+<httpSample t="1417" it="0" lt="1417" ct="693" ts="1574706342278" s="true" lb="webhook_get for Amount mismatch" rc="200" rm="OK" tn="Setu API 1-1" dt="text" de="" by="1033" sby="168" sc="1" ec="0" ng="1" na="1" hn="CommandCenter2">
+  <responseHeader class="java.lang.String">HTTP/1.1 200 OK
+Server: nginx/1.10.3
+Content-Type: application/json
+Transfer-Encoding: chunked
+Vary: Accept-Encoding
+Cache-Control: no-cache, private
+Date: Mon, 25 Nov 2019 18:25:43 GMT
+X-RateLimit-Limit: 100
+X-RateLimit-Remaining: 95
+</responseHeader>
+  <requestHeader class="java.lang.String">Connection: keep-alive
+Host: webhook.site
+User-Agent: Apache-HttpClient/4.5.10 (Java/1.8.0_201)
+</requestHeader>
+  <responseData class="java.lang.String">{&quot;data&quot;:[{&quot;uuid&quot;:&quot;f8b535a6-c94f-4bd4-a7a2-624e0efc4c8c&quot;,&quot;token_id&quot;:&quot;880175d7-1aa6-4a75-92e0-de77ac79c4fc&quot;,&quot;ip&quot;:&quot;42.109.145.36&quot;,&quot;hostname&quot;:&quot;webhook.site&quot;,&quot;method&quot;:&quot;POST&quot;,&quot;user_agent&quot;:&quot;axios\/0.19.0&quot;,&quot;content&quot;:&quot;{\&quot;success\&quot;:false,\&quot;error\&quot;:\&quot;Amount did not match\&quot;,\&quot;transactionId\&quot;:9791065814}&quot;,&quot;query&quot;:null,&quot;headers&quot;:{&quot;x-forwarded-for&quot;:[&quot;42.109.145.36&quot;],&quot;connection&quot;:[&quot;close&quot;],&quot;host&quot;:[&quot;webhook.site&quot;],&quot;content-length&quot;:[&quot;75&quot;],&quot;user-agent&quot;:[&quot;axios\/0.19.0&quot;],&quot;content-type&quot;:[&quot;application\/json;charset=utf-8&quot;],&quot;accept&quot;:[&quot;application\/json, text\/plain, *\/*&quot;]},&quot;url&quot;:&quot;http:\/\/webhook.site\/880175d7-1aa6-4a75-92e0-de77ac79c4fc&quot;,&quot;created_at&quot;:&quot;2019-11-25 18:25:42&quot;,&quot;updated_at&quot;:&quot;2019-11-25 18:25:42&quot;}],&quot;total&quot;:1,&quot;per_page&quot;:50,&quot;current_page&quot;:1,&quot;is_last_page&quot;:true,&quot;from&quot;:1,&quot;to&quot;:1}</responseData>
+  <responseFile class="java.lang.String"></responseFile>
+  <cookies class="java.lang.String"></cookies>
+  <method class="java.lang.String">GET</method>
+  <queryString class="java.lang.String"></queryString>
+  <java.net.URL>https://webhook.site/token/880175d7-1aa6-4a75-92e0-de77ac79c4fc/requests</java.net.URL>
+</httpSample>
+<httpSample t="722" it="0" lt="722" ct="0" ts="1574706343697" s="true" lb="webhook_delete for Amount mismatch" rc="200" rm="OK" tn="Setu API 1-1" dt="text" de="" by="271" sby="253" sc="1" ec="0" ng="1" na="1" hn="CommandCenter2">
+  <responseHeader class="java.lang.String">HTTP/1.1 200 OK
+Server: nginx/1.10.3
+Content-Type: application/json
+Transfer-Encoding: chunked
+Vary: Accept-Encoding
+Cache-Control: no-cache, private
+Date: Mon, 25 Nov 2019 18:25:44 GMT
+X-RateLimit-Limit: 100
+X-RateLimit-Remaining: 96
+</responseHeader>
+  <requestHeader class="java.lang.String">Connection: keep-alive
+Content-Length: 0
+Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+Host: webhook.site
+User-Agent: Apache-HttpClient/4.5.10 (Java/1.8.0_201)
+</requestHeader>
+  <responseData class="java.lang.String">{&quot;status&quot;:true}</responseData>
+  <responseFile class="java.lang.String"></responseFile>
+  <cookies class="java.lang.String"></cookies>
+  <method class="java.lang.String">DELETE</method>
+  <queryString class="java.lang.String"></queryString>
+  <java.net.URL>https://webhook.site/token/880175d7-1aa6-4a75-92e0-de77ac79c4fc/request</java.net.URL>
+</httpSample>
+<sample t="42" it="0" lt="0" ct="0" ts="1574706344420" s="true" lb="JSR223 Sampler_Callback validations" rc="200" rm="OK" tn="Setu API 1-1" dt="text" de="" by="307" sby="0" sc="1" ec="0" ng="1" na="1" hn="CommandCenter2">
+  <responseHeader class="java.lang.String"></responseHeader>
+  <requestHeader class="java.lang.String"></requestHeader>
+  <responseData class="java.lang.String">
+Transaction IDs are matching. 
+Pay response for Transaction ID = 9791065814
+Callback response for Transaction ID = 9791065814
+Expected Callback response for Success value. 
+Callback response for Success = false
+Expected Callback response for Error value. 
+Callback response for Error = Amount did not match</responseData>
+  <responseFile class="java.lang.String"></responseFile>
+  <samplerData class="java.lang.String">def pay_transactionId = vars.get(&quot;pay_transactionId&quot;)
+def callback_transactionId = vars.get(&quot;callback_transactionId&quot;)
+def error = vars.get(&quot;callback_error&quot;)
+def success = vars.get(&quot;callback_success&quot;)
+
+StringBuilder successMessage = new StringBuilder()
+StringBuilder errorMessage = new StringBuilder()
+def errorFlag = false
+
+if (pay_transactionId.equals(callback_transactionId))
+{
+	successMessage.append(&quot;\nTransaction IDs are matching. \nPay response for Transaction ID = &quot; + pay_transactionId + &quot;\nCallback response for Transaction ID = &quot; + callback_transactionId)
+} else
+{
+	errorFlag = true
+	errorMessage.append(&quot;\nTransaction IDs are NOT matching! \nPay response for Transaction ID = &quot; + pay_transactionId + &quot;\nCallback response for Transaction ID = &quot; + callback_transactionId)
+}
+
+if (success.equals(&quot;false&quot;))
+{
+	successMessage.append(&quot;\nExpected Callback response for Success value. \nCallback response for Success = &quot; + success)
+} else
+{
+	errorFlag = true
+	errorMessage.append(&quot;\nUnexpected Callback response for Success value! \nCallback response for Success = &quot; + success)
+}
+
+if (error.equals(&quot;Amount did not match&quot;))
+{
+	successMessage.append(&quot;\nExpected Callback response for Error value. \nCallback response for Error = &quot; + error)
+} else
+{
+	errorFlag = true
+	errorMessage.append(&quot;\nUnexpected Callback response for Error value! \nCallback response for Error = &quot; + error)
+}
+
+
+if (errorFlag)
+{
+	SampleResult.setSuccessful(false)
+	SampleResult.setResponseData(errorMessage.toString())
+	SampleResult.setResponseMessage(&quot;Callback validation failed. See response data for more details&quot;)
+} else 
+{
+	SampleResult.setResponseData(successMessage.toString())	
+}
+
+</samplerData>
+</sample>
+<httpSample t="11" it="0" lt="11" ct="4" ts="1574706344464" s="true" lb="pay_Bill not found" rc="200" rm="OK" tn="Setu API 1-1" dt="text" de="utf-8" by="269" sby="383" sc="1" ec="0" ng="1" na="1" hn="CommandCenter2">
+  <responseHeader class="java.lang.String">HTTP/1.1 200 OK
+X-Powered-By: Express
+Content-Type: application/json; charset=utf-8
+Content-Length: 57
+ETag: W/&quot;39-hqKRjMJR4ymztMvByG8BJ1g7cNM&quot;
+Date: Mon, 25 Nov 2019 18:25:44 GMT
+Connection: keep-alive
+</responseHeader>
+  <requestHeader class="java.lang.String">Connection: keep-alive
+Content-Type: application/json
+PAYER-ID: 41
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJhdXRoMCJ9.phn04dd33tfOgIni6uMwy-oPwgI2Xgqz96p0jVrxQXc
+Content-Length: 65
+Host: localhost:3000
+User-Agent: Apache-HttpClient/4.5.10 (Java/1.8.0_201)
+</requestHeader>
+  <responseData class="java.lang.String">{&quot;message&quot;:&quot;success&quot;,&quot;data&quot;:{&quot;transactionId&quot;:6386174909}}</responseData>
+  <responseFile class="java.lang.String"></responseFile>
+  <cookies class="java.lang.String"></cookies>
+  <method class="java.lang.String">POST</method>
+  <queryString class="java.lang.String">{&#xd;
+	&quot;ifsc&quot;: &quot;TestIFSC&quot;,&#xd;
+	&quot;accountNumber&quot;: &quot;10&quot;,&#xd;
+	&quot;amount&quot;: 1&#xd;
+}</queryString>
+  <java.net.URL>http://localhost:3000/api/pay</java.net.URL>
+</httpSample>
+<httpSample t="1041" it="0" lt="1041" ct="695" ts="1574706345977" s="true" lb="webhook_get for Bill not found" rc="200" rm="OK" tn="Setu API 1-1" dt="text" de="" by="1027" sby="168" sc="1" ec="0" ng="1" na="1" hn="CommandCenter2">
+  <responseHeader class="java.lang.String">HTTP/1.1 200 OK
+Server: nginx/1.10.3
+Content-Type: application/json
+Transfer-Encoding: chunked
+Vary: Accept-Encoding
+Cache-Control: no-cache, private
+Date: Mon, 25 Nov 2019 18:25:47 GMT
+X-RateLimit-Limit: 100
+X-RateLimit-Remaining: 94
+</responseHeader>
+  <requestHeader class="java.lang.String">Connection: keep-alive
+Host: webhook.site
+User-Agent: Apache-HttpClient/4.5.10 (Java/1.8.0_201)
+</requestHeader>
+  <responseData class="java.lang.String">{&quot;data&quot;:[{&quot;uuid&quot;:&quot;249a49c5-03cf-4fe5-b4e8-fd46f89b8b72&quot;,&quot;token_id&quot;:&quot;880175d7-1aa6-4a75-92e0-de77ac79c4fc&quot;,&quot;ip&quot;:&quot;42.109.145.36&quot;,&quot;hostname&quot;:&quot;webhook.site&quot;,&quot;method&quot;:&quot;POST&quot;,&quot;user_agent&quot;:&quot;axios\/0.19.0&quot;,&quot;content&quot;:&quot;{\&quot;success\&quot;:false,\&quot;error\&quot;:\&quot;Bill not found\&quot;,\&quot;transactionId\&quot;:6386174909}&quot;,&quot;query&quot;:null,&quot;headers&quot;:{&quot;x-forwarded-for&quot;:[&quot;42.109.145.36&quot;],&quot;connection&quot;:[&quot;close&quot;],&quot;host&quot;:[&quot;webhook.site&quot;],&quot;content-length&quot;:[&quot;69&quot;],&quot;user-agent&quot;:[&quot;axios\/0.19.0&quot;],&quot;content-type&quot;:[&quot;application\/json;charset=utf-8&quot;],&quot;accept&quot;:[&quot;application\/json, text\/plain, *\/*&quot;]},&quot;url&quot;:&quot;http:\/\/webhook.site\/880175d7-1aa6-4a75-92e0-de77ac79c4fc&quot;,&quot;created_at&quot;:&quot;2019-11-25 18:25:45&quot;,&quot;updated_at&quot;:&quot;2019-11-25 18:25:45&quot;}],&quot;total&quot;:1,&quot;per_page&quot;:50,&quot;current_page&quot;:1,&quot;is_last_page&quot;:true,&quot;from&quot;:1,&quot;to&quot;:1}</responseData>
+  <responseFile class="java.lang.String"></responseFile>
+  <cookies class="java.lang.String"></cookies>
+  <method class="java.lang.String">GET</method>
+  <queryString class="java.lang.String"></queryString>
+  <java.net.URL>https://webhook.site/token/880175d7-1aa6-4a75-92e0-de77ac79c4fc/requests</java.net.URL>
+</httpSample>
+<httpSample t="411" it="0" lt="411" ct="0" ts="1574706347019" s="true" lb="webhook_delete for Bill not found" rc="200" rm="OK" tn="Setu API 1-1" dt="text" de="" by="271" sby="253" sc="1" ec="0" ng="1" na="1" hn="CommandCenter2">
+  <responseHeader class="java.lang.String">HTTP/1.1 200 OK
+Server: nginx/1.10.3
+Content-Type: application/json
+Transfer-Encoding: chunked
+Vary: Accept-Encoding
+Cache-Control: no-cache, private
+Date: Mon, 25 Nov 2019 18:25:47 GMT
+X-RateLimit-Limit: 100
+X-RateLimit-Remaining: 95
+</responseHeader>
+  <requestHeader class="java.lang.String">Connection: keep-alive
+Content-Length: 0
+Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+Host: webhook.site
+User-Agent: Apache-HttpClient/4.5.10 (Java/1.8.0_201)
+</requestHeader>
+  <responseData class="java.lang.String">{&quot;status&quot;:true}</responseData>
+  <responseFile class="java.lang.String"></responseFile>
+  <cookies class="java.lang.String"></cookies>
+  <method class="java.lang.String">DELETE</method>
+  <queryString class="java.lang.String"></queryString>
+  <java.net.URL>https://webhook.site/token/880175d7-1aa6-4a75-92e0-de77ac79c4fc/request</java.net.URL>
+</httpSample>
+<sample t="16" it="0" lt="0" ct="0" ts="1574706347430" s="true" lb="JSR223 Sampler_Callback validations" rc="200" rm="OK" tn="Setu API 1-1" dt="text" de="" by="301" sby="0" sc="1" ec="0" ng="1" na="1" hn="CommandCenter2">
+  <responseHeader class="java.lang.String"></responseHeader>
+  <requestHeader class="java.lang.String"></requestHeader>
+  <responseData class="java.lang.String">
+Transaction IDs are matching. 
+Pay response for Transaction ID = 6386174909
+Callback response for Transaction ID = 6386174909
+Expected Callback response for Success value. 
+Callback response for Success = false
+Expected Callback response for Error value. 
+Callback response for Error = Bill not found</responseData>
+  <responseFile class="java.lang.String"></responseFile>
+  <samplerData class="java.lang.String">def pay_transactionId = vars.get(&quot;pay_transactionId&quot;)
+def callback_transactionId = vars.get(&quot;callback_transactionId&quot;)
+def error = vars.get(&quot;callback_error&quot;)
+def success = vars.get(&quot;callback_success&quot;)
+
+StringBuilder successMessage = new StringBuilder()
+StringBuilder errorMessage = new StringBuilder()
+def errorFlag = false
+
+if (pay_transactionId.equals(callback_transactionId))
+{
+	successMessage.append(&quot;\nTransaction IDs are matching. \nPay response for Transaction ID = &quot; + pay_transactionId + &quot;\nCallback response for Transaction ID = &quot; + callback_transactionId)
+} else
+{
+	errorFlag = true
+	errorMessage.append(&quot;\nTransaction IDs are NOT matching! \nPay response for Transaction ID = &quot; + pay_transactionId + &quot;\nCallback response for Transaction ID = &quot; + callback_transactionId)
+}
+
+if (success.equals(&quot;false&quot;))
+{
+	successMessage.append(&quot;\nExpected Callback response for Success value. \nCallback response for Success = &quot; + success)
+} else
+{
+	errorFlag = true
+	errorMessage.append(&quot;\nUnexpected Callback response for Success value! \nCallback response for Success = &quot; + success)
+}
+
+if (error.equals(&quot;Bill not found&quot;))
+{
+	successMessage.append(&quot;\nExpected Callback response for Error value. \nCallback response for Error = &quot; + error)
+} else
+{
+	errorFlag = true
+	errorMessage.append(&quot;\nUnexpected Callback response for Error value! \nCallback response for Error = &quot; + error)
+}
+
+
+if (errorFlag)
+{
+	SampleResult.setSuccessful(false)
+	SampleResult.setResponseData(errorMessage.toString())
+	SampleResult.setResponseMessage(&quot;Callback validation failed. See response data for more details&quot;)
+} else 
+{
+	SampleResult.setResponseData(successMessage.toString())	
+}
+
+</samplerData>
+</sample>
+
+</testResults>
