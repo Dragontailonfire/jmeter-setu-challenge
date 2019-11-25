@@ -19,12 +19,12 @@ The basic business flow is as follows:
 
 #### 1. Positive case
     1. Creation of Webhook.sites token that is to be used later for the verification of bill payment.
-    2. Registration of the payee using the URL genarated with the webhook.sites token.
+    2. Registration of the payee using the URL generated with the webhook.sites token.
     3. Generating all the bills using the payee id and the JWT token calculated from the onboard response.
     4. Payment of all the generated bills by the registered payee.
     5. Verification of the response with the callback response. This is extracted with the help of webhook.site API.
 #### 2. Negative case
-    1. Onboarding error validations
+    1. On boarding error validations
         1. 400 error code
         2. 404 error code
     2. Billing error validations
@@ -39,7 +39,7 @@ The basic business flow is as follows:
 ### 2. Jmeter components
 
 #### 0. test suite section
-    1. User defined variables component stores variables that can help for debugging. If the onboarding and token generation is not to be repeated for all runs. 
+    1. User defined variables component stores variables that can help for debugging. If the on boarding and token generation is not to be repeated for all runs. 
 
 #### 1. webhook.site section (token generation)
     1. HTTP sampler to generate the token.
@@ -51,13 +51,13 @@ The basic business flow is as follows:
     3. JSON extractor for saving the payee ID and the JWT secret. This is used in the Header for all other requests as well as the JWT token generation.
     4. JSR223 Sampler used for calculating the JWT secret. This and the payee IDs are assigned to variables that are to be used in subsequent REST calls.
 #### 3. bill section
-    1. Header manager for the Content Type. Uses the payee ID and the JWT secret calculated from onboarding section
+    1. Header manager for the Content Type. Uses the payee ID and the JWT secret calculated from on boarding section
     2. HTTP sampler to generate all the bills.
     3. JSON extractor for saving the bill details. This is used later for payment and verification purposes.
     4. While controller is used to repeat the pay end-point call to pay all the generated bills.
-    5. JSR223 sampler used for assigning individual bill details to variables for bill payment and verfication.
+    5. JSR223 sampler used for assigning individual bill details to variables for bill payment and verification.
 #### 4. pay section
-    1. Header manager for the Content Type. Uses the payee ID and the JWT secret calculated from onboarding section
+    1. Header manager for the Content Type. Uses the payee ID and the JWT secret calculated from on boarding section
     2. HTTP sampler to pay a single bill. The request is created with the bill info extracted from the bill end-point. The call is repeated for the number of bills generated.
     3. JSON extractor for saving the transaction ID. This is used later for verification purposes.
 #### 5. webhook.site section (requests)
@@ -67,9 +67,9 @@ The basic business flow is as follows:
     4. HTTP sampler to delete all the requests send to the token.
     5. JSON extractor for saving the values from the callback content variable saved earlier.
     6. JSR223 sampler does the assertions. 
-#### 6. Listner
+#### 6. listener
     1. View Results Tree is used to view the status of the run. 
-    2. Edit the file path in this component to generate the .xml file
+    2. Edit the file path in this component to generate the .XML file
 
 ## 3. Project Setup
 1. Download JMeter from [here](https://jmeter.apache.org/download_jmeter.cgi)
@@ -84,16 +84,16 @@ The basic business flow is as follows:
 1. Unzip and save the downloaded JMeter file.
 2. Open the `jmeter.bat` file from the `bin` folder.
 3. Navigate to the project folder and open the `Setu_api_main.jmx` file.
-4. Give the file path in the View Results Tree listener for the xml file generation.
+4. Give the file path in the View Results Tree listener for the XML file generation.
 5. Run the project from within JMeter and view the result in using the View Results Tree.
 
 ## 5. Generating reports
 1. APDEX report generation command (run from the `bin` folder) - `jmeter -n -t <folder-path>\jmeter-setu-challenge\Setu_api_main.jmx -l <folder-path>\jmeter-setu-challenge\Results\RunResult.xml -e -o <folder-path>\jmeter-setu-challenge\Results`
-2. An `xml` file is generated that contains exhastive information about the execution from the View Results Tree listener. (RunResult.xml in project root)
+2. An `XML` file is generated that contains exhaustive information about the execution from the View Results Tree listener. (RunResult.xml in project root)
 
 ## 6. Planned enhancements
-1. Using an in-house solution for verifying the callback funcitonality instead of 3rd party API.
-2. Create pretty `.html` report from `.xml` result file.
+1. Using an in-house solution for verifying the callback functionality instead of 3rd party API.
+2. Create pretty `.html` report from `.XML` result file.
 
 ## 6. References
 1. Challenge repo - https://gitlab.com/setu-lobby/test-automation-test/blob/master/README.md
