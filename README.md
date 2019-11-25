@@ -95,7 +95,7 @@ The basic business flow is as follows:
 1. Using an in-house solution for verifying the callback functionality instead of 3rd party API.
 2. Create pretty `.html` report from `.XML` result file.
 
-## 6. References
+## 7. References
 1. Challenge repo - https://gitlab.com/setu-lobby/test-automation-test/blob/master/README.md
 2. Java flavour of JWT taken from [here](https://github.com/auth0/java-jwt)
 3. [Webhook.site](https://docs.webhook.site/api.html) API documentation
