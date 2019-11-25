@@ -12,7 +12,7 @@
       <stringProp name="TestPlan.user_define_classpath"></stringProp>
     </TestPlan>
     <hashTree>
-      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables - Debug" enabled="false">
         <collectionProp name="Arguments.arguments">
           <elementProp name="jwtToken" elementType="Argument">
             <stringProp name="Argument.name">jwtToken</stringProp>
@@ -30,9 +30,10 @@
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
+        <stringProp name="TestPlan.comments">Enable this component for debug purpose.</stringProp>
       </Arguments>
       <hashTree/>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Setu API" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
@@ -46,7 +47,54 @@
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
       </ThreadGroup>
       <hashTree>
-        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="onboard" enabled="false"/>
+        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="webhook.site" enabled="true">
+          <stringProp name="TestPlan.comments">This controller contains the webhook.site token generation request</stringProp>
+        </GenericController>
+        <hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="create webhook token" enabled="true">
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value">{&#xd;
+  &quot;default_status&quot;: 200,&#xd;
+  &quot;default_content&quot;: &quot;Payment validations!&quot;,&#xd;
+  &quot;default_content_type&quot;: &quot;application/json&quot;,&#xd;
+  &quot;timeout&quot;: 0&#xd;
+}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain">webhook.site</stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.protocol">https</stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/token</stringProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor - uuid" enabled="true">
+              <stringProp name="TestPlan.comments">Extract the uuid from the response</stringProp>
+              <stringProp name="JSONPostProcessor.referenceNames">webHookToken</stringProp>
+              <stringProp name="JSONPostProcessor.jsonPathExprs">$..uuid</stringProp>
+              <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+              <stringProp name="JSONPostProcessor.defaultValues">NO_VALUE</stringProp>
+            </JSONPostProcessor>
+            <hashTree/>
+          </hashTree>
+        </hashTree>
+        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="onboard" enabled="true">
+          <stringProp name="TestPlan.comments">This controller contains the onboard requests. </stringProp>
+        </GenericController>
         <hashTree>
           <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager_onboard" enabled="true">
             <collectionProp name="HeaderManager.headers">
@@ -57,15 +105,15 @@
             </collectionProp>
           </HeaderManager>
           <hashTree/>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request_onboard" enabled="true">
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="onboard end-point" enabled="true">
             <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
               <collectionProp name="Arguments.arguments">
                 <elementProp name="" elementType="HTTPArgument">
                   <boolProp name="HTTPArgument.always_encode">false</boolProp>
                   <stringProp name="Argument.value">{&#xd;
-	&quot;callbackURL&quot;: &quot;https://webhook.site/fc11bb7a-089f-4ea3-b68d-860750287de1&quot;,&#xd;
-	&quot;name&quot;: &quot;UltraPayer&quot;&#xd;
+	&quot;callbackURL&quot;: &quot;https://webhook.site/${webHookToken}&quot;,&#xd;
+	&quot;name&quot;: &quot;JmeterTestPayer&quot;&#xd;
 }</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
                 </elementProp>
@@ -84,7 +132,7 @@
             <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
             <stringProp name="HTTPSampler.connect_timeout"></stringProp>
             <stringProp name="HTTPSampler.response_timeout"></stringProp>
-            <stringProp name="TestPlan.comments">http://localhost:3000/api/test</stringProp>
+            <stringProp name="TestPlan.comments">Setu callback URL -&gt; http://localhost:3000/api/test</stringProp>
           </HTTPSamplerProxy>
           <hashTree>
             <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor - jwtSecret" enabled="true">
@@ -92,6 +140,7 @@
               <stringProp name="JSONPostProcessor.jsonPathExprs">$..jwtSecret</stringProp>
               <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
               <stringProp name="JSONPostProcessor.defaultValues">No_Token</stringProp>
+              <stringProp name="TestPlan.comments">Extract the JWT Secret from the response</stringProp>
             </JSONPostProcessor>
             <hashTree/>
             <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor - id" enabled="true">
@@ -99,6 +148,7 @@
               <stringProp name="JSONPostProcessor.jsonPathExprs">$..id</stringProp>
               <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
               <stringProp name="JSONPostProcessor.defaultValues">No_ID</stringProp>
+              <stringProp name="TestPlan.comments">Extract the Payer ID from the response</stringProp>
             </JSONPostProcessor>
             <hashTree/>
           </hashTree>
@@ -124,6 +174,7 @@ try
 	//The payer ID extracted from the onboard response is assigned to variable to be used throughout the execution
 	vars.put(&quot;PAYER-ID&quot;, vars.get(&quot;payerId&quot;))
 
+	//The JWT token and Payer ID is returned as response of this sampler
 	SampleResult.setResponseData(&quot;JWTToken = &quot; + vars.get(&quot;jwtToken&quot;) + &quot;\nPayer ID = &quot; + vars.get(&quot;payerId&quot;))
 }
 catch (Exception e)
@@ -134,12 +185,13 @@ catch (Exception e)
 }
 </stringProp>
             <stringProp name="scriptLanguage">groovy</stringProp>
+            <stringProp name="TestPlan.comments">This sampler will calculate the JWT token from the JWT secret taken from the onboard end-point</stringProp>
           </JSR223Sampler>
           <hashTree/>
         </hashTree>
         <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="bills" enabled="true"/>
         <hashTree>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request_bills" enabled="true">
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="get bills end-point" enabled="true">
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
               <collectionProp name="Arguments.arguments"/>
             </elementProp>
@@ -156,6 +208,7 @@ catch (Exception e)
             <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
             <stringProp name="HTTPSampler.connect_timeout"></stringProp>
             <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="TestPlan.comments">Returns all the end-point if the header value matches</stringProp>
           </HTTPSamplerProxy>
           <hashTree>
             <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor - bill_id" enabled="true">
@@ -163,6 +216,7 @@ catch (Exception e)
               <stringProp name="JSONPostProcessor.jsonPathExprs">$..id</stringProp>
               <stringProp name="JSONPostProcessor.match_numbers">-1</stringProp>
               <stringProp name="JSONPostProcessor.defaultValues">No_bill_id</stringProp>
+              <stringProp name="TestPlan.comments">Extract the bill ID from the response</stringProp>
             </JSONPostProcessor>
             <hashTree/>
             <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor - bill_amount" enabled="true">
@@ -170,6 +224,7 @@ catch (Exception e)
               <stringProp name="JSONPostProcessor.jsonPathExprs">$..amount</stringProp>
               <stringProp name="JSONPostProcessor.match_numbers">-1</stringProp>
               <stringProp name="JSONPostProcessor.defaultValues">No_bill_amount</stringProp>
+              <stringProp name="TestPlan.comments">Extract the bill amount from the response</stringProp>
             </JSONPostProcessor>
             <hashTree/>
             <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor - bill_billerName" enabled="true">
@@ -177,6 +232,7 @@ catch (Exception e)
               <stringProp name="JSONPostProcessor.jsonPathExprs">$..billerName</stringProp>
               <stringProp name="JSONPostProcessor.match_numbers">-1</stringProp>
               <stringProp name="JSONPostProcessor.defaultValues">No_bill_billerName</stringProp>
+              <stringProp name="TestPlan.comments">Extract the bill billerName from the response</stringProp>
             </JSONPostProcessor>
             <hashTree/>
             <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor - bill_ifsc" enabled="true">
@@ -184,6 +240,7 @@ catch (Exception e)
               <stringProp name="JSONPostProcessor.jsonPathExprs">$..ifsc</stringProp>
               <stringProp name="JSONPostProcessor.match_numbers">-1</stringProp>
               <stringProp name="JSONPostProcessor.defaultValues">No_bill_ifsc</stringProp>
+              <stringProp name="TestPlan.comments">Extract the bill ifsc from the response</stringProp>
             </JSONPostProcessor>
             <hashTree/>
             <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor - bill_accountNumber" enabled="true">
@@ -191,6 +248,7 @@ catch (Exception e)
               <stringProp name="JSONPostProcessor.jsonPathExprs">$..accountNumber</stringProp>
               <stringProp name="JSONPostProcessor.match_numbers">-1</stringProp>
               <stringProp name="JSONPostProcessor.defaultValues">No_bill_accountNumber</stringProp>
+              <stringProp name="TestPlan.comments">Extract the bill accountNumber from the response</stringProp>
             </JSONPostProcessor>
             <hashTree/>
             <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="JSR223 PostProcessor" enabled="true">
@@ -199,8 +257,10 @@ catch (Exception e)
               <stringProp name="parameters"></stringProp>
               <stringProp name="script">def count = vars.get(&quot;bill_id_matchNr&quot;)
 
+//Assigns the total number of bills to counter variable
 vars.put(&quot;counter&quot;, count)</stringProp>
               <stringProp name="scriptLanguage">groovy</stringProp>
+              <stringProp name="TestPlan.comments">This processor will initialize the counter variable with the number of bills returned</stringProp>
             </JSR223PostProcessor>
             <hashTree/>
             <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager_bills" enabled="true">
@@ -218,11 +278,13 @@ vars.put(&quot;counter&quot;, count)</stringProp>
                   <stringProp name="Header.value">Bearer ${jwtToken}</stringProp>
                 </elementProp>
               </collectionProp>
+              <stringProp name="TestPlan.comments">Assigns the Payer ID and JWT Token from the onboard response</stringProp>
             </HeaderManager>
             <hashTree/>
           </hashTree>
           <WhileController guiclass="WhileControllerGui" testclass="WhileController" testname="While Controller" enabled="true">
             <stringProp name="WhileController.condition">${__jexl3(${counter}!=0)}</stringProp>
+            <stringProp name="TestPlan.comments">This controller will check the value in counter value and proceeds if it is not 0. This will iterate for each bill.</stringProp>
           </WhileController>
           <hashTree>
             <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler_Bill Information" enabled="true">
@@ -232,6 +294,7 @@ vars.put(&quot;counter&quot;, count)</stringProp>
               <stringProp name="cacheKey">true</stringProp>
               <stringProp name="script">def count = vars.get(&quot;counter&quot;)
 
+//Will extract the bill info based on the counter and assigns to temp variables
 def billNumber = count
 def id = vars.get(&quot;bill_id_&quot; + count)
 def amount = vars.get(&quot;bill_amount_&quot; + count)
@@ -239,20 +302,26 @@ def billerName = vars.get(&quot;bill_billerName_&quot; + count)
 def ifsc = vars.get(&quot;bill_ifsc_&quot; + count)
 def accountNumber = vars.get(&quot;bill_accountNumber_&quot; + count)
 
+//Decrease the counter
 count--
+
+//Assigns the bill details to variables to be used for bill payment and for subsequent verifications
+vars.put(&quot;billNumber&quot;, billNumber)
 vars.put(&quot;counter&quot;, count)
 vars.put(&quot;amount&quot;, amount)
 vars.put(&quot;ifsc&quot;, ifsc)
 vars.put(&quot;accountNumber&quot;, accountNumber)
 
+//Bill Information is returned as response of this sampler
 SampleResult.setResponseData(&quot;--------------------- Information for Bill # &quot; + billNumber + &quot; ---------------------\nID = &quot; + id + &quot;\nAmount = &quot; + amount + &quot;\nBillerName = &quot; + billerName + &quot;\nIFSC = &quot; + ifsc + &quot;\nAccountNumber = &quot; + accountNumber)
 
 </stringProp>
+              <stringProp name="TestPlan.comments">This sampler will assign the Bill info of individual bills to variables to be used for bill payments. Also the counter variable is decreased. </stringProp>
             </JSR223Sampler>
             <hashTree/>
             <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="pay" enabled="true"/>
             <hashTree>
-              <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request_pay" enabled="true">
+              <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="pay end-point for Bill ${billNumber}" enabled="true">
                 <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
                 <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
                   <collectionProp name="Arguments.arguments">
@@ -280,6 +349,7 @@ SampleResult.setResponseData(&quot;--------------------- Information for Bill # 
                 <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
                 <stringProp name="HTTPSampler.connect_timeout"></stringProp>
                 <stringProp name="HTTPSampler.response_timeout"></stringProp>
+                <stringProp name="TestPlan.comments">End-point to pay the bill with details extracted from the bills end-point. The values are taken from the variables created in Bill information sampler</stringProp>
               </HTTPSamplerProxy>
               <hashTree>
                 <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor - pay_transactionId" enabled="true">
@@ -287,6 +357,7 @@ SampleResult.setResponseData(&quot;--------------------- Information for Bill # 
                   <stringProp name="JSONPostProcessor.jsonPathExprs">$..transactionId</stringProp>
                   <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
                   <stringProp name="JSONPostProcessor.defaultValues">No_TransactionId</stringProp>
+                  <stringProp name="TestPlan.comments">Extract the payment transactionId from the response</stringProp>
                 </JSONPostProcessor>
                 <hashTree/>
                 <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager_pay" enabled="true">
@@ -304,13 +375,16 @@ SampleResult.setResponseData(&quot;--------------------- Information for Bill # 
                       <stringProp name="Header.value">Bearer ${jwtToken}</stringProp>
                     </elementProp>
                   </collectionProp>
+                  <stringProp name="TestPlan.comments">Assigns the Payer ID and JWT Token from the onboard response</stringProp>
                 </HeaderManager>
                 <hashTree/>
               </hashTree>
             </hashTree>
-            <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="webhook.site" enabled="true"/>
+            <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="webhook.site" enabled="true">
+              <stringProp name="TestPlan.comments">Contains the requests for webhook.site API used for the callback verification</stringProp>
+            </GenericController>
             <hashTree>
-              <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request_webhook_get" enabled="true">
+              <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="webhook get end-point for Bill ${billNumber}" enabled="true">
                 <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
                   <collectionProp name="Arguments.arguments"/>
                 </elementProp>
@@ -327,21 +401,24 @@ SampleResult.setResponseData(&quot;--------------------- Information for Bill # 
                 <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
                 <stringProp name="HTTPSampler.connect_timeout"></stringProp>
                 <stringProp name="HTTPSampler.response_timeout"></stringProp>
+                <stringProp name="TestPlan.comments">This end-point returns all the request send to the registered callback URL. It is identified with the webhook token generated intially.</stringProp>
               </HTTPSamplerProxy>
               <hashTree>
-                <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor" enabled="true">
+                <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor_callbackContent" enabled="true">
                   <stringProp name="JSONPostProcessor.referenceNames">callbackContent</stringProp>
                   <stringProp name="JSONPostProcessor.jsonPathExprs">$..content</stringProp>
                   <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
                   <stringProp name="JSONPostProcessor.defaultValues">NONE</stringProp>
+                  <stringProp name="TestPlan.comments">Extract the content from the response that contains the callback request json</stringProp>
                 </JSONPostProcessor>
                 <hashTree/>
                 <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="true">
-                  <stringProp name="ConstantTimer.delay">1000</stringProp>
+                  <stringProp name="ConstantTimer.delay">1500</stringProp>
+                  <stringProp name="TestPlan.comments">This timer is used to create a gap between getting all the callback requests made and deleting all the requests after validation</stringProp>
                 </ConstantTimer>
                 <hashTree/>
               </hashTree>
-              <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request_webhook_delete" enabled="true">
+              <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="webhook delete end-point for Bill ${billNumber}" enabled="true">
                 <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
                   <collectionProp name="Arguments.arguments"/>
                 </elementProp>
@@ -358,6 +435,7 @@ SampleResult.setResponseData(&quot;--------------------- Information for Bill # 
                 <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
                 <stringProp name="HTTPSampler.connect_timeout"></stringProp>
                 <stringProp name="HTTPSampler.response_timeout"></stringProp>
+                <stringProp name="TestPlan.comments">This end-point deletes all the request send to the registered callback URL. It is identified with the webhook token generated intially.</stringProp>
               </HTTPSamplerProxy>
               <hashTree>
                 <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor - callback_transactionId" enabled="true">
@@ -367,6 +445,7 @@ SampleResult.setResponseData(&quot;--------------------- Information for Bill # 
                   <stringProp name="Sample.scope">variable</stringProp>
                   <stringProp name="Scope.variable">callbackContent</stringProp>
                   <stringProp name="JSONPostProcessor.defaultValues">NO_VALUE</stringProp>
+                  <stringProp name="TestPlan.comments">Extract the transaction ID from the callbackContent variable. The extractor is placed under the delete end-point for convenience</stringProp>
                 </JSONPostProcessor>
                 <hashTree/>
               </hashTree>
@@ -375,30 +454,564 @@ SampleResult.setResponseData(&quot;--------------------- Information for Bill # 
                 <stringProp name="parameters"></stringProp>
                 <stringProp name="filename"></stringProp>
                 <stringProp name="cacheKey">true</stringProp>
-                <stringProp name="script">def pay_transactionId = vars.get(&quot;pay_transactionId&quot;)
+                <stringProp name="script">//gets the pay and callback response transaction IDs
+def pay_transactionId = vars.get(&quot;pay_transactionId&quot;)
 def callback_transactionId = vars.get(&quot;callback_transactionId&quot;)
 
+//these are used to store the sampler response message
+StringBuilder successMessage = new StringBuilder()
+StringBuilder errorMessage = new StringBuilder()
+
+//flag to evaluate the comparison
+def errorFlag = false
+
+//compare the transaction IDs
 if (pay_transactionId.equals(callback_transactionId))
 {
-	SampleResult.setResponseData(&quot;Transaction IDs are matching&quot;)
+	successMessage.append(&quot;\nTransaction IDs are matching. \nPay response Transaction ID = &quot; + pay_transactionId + &quot;\nCallback response Transaction ID = &quot; + callback_transactionId)
 } else
 {
-	SampleResult.setSuccessful(false)
-	SampleResult.setResponseData(&quot;Transaction IDs are NOT matching!&quot;)
-	SampleResult.setResponseMessage(&quot;Callback validation failed. See response data for more details&quot;)
+	errorFlag = true
+	errorMessage.append(&quot;\nTransaction IDs are NOT matching! \nPay response Transaction ID = &quot; + pay_transactionId + &quot;\nCallback response Transaction ID = &quot; + callback_transactionId)
 }
+
+//compare the Bill info details with the callback response details
+
+if (errorFlag)
+{
+	SampleResult.setSuccessful(false)
+	SampleResult.setResponseData(errorMessage.toString())
+	SampleResult.setResponseMessage(&quot;Callback validation failed. See response data for more details&quot;)
+} else 
+{
+	SampleResult.setResponseData(successMessage.toString())	
+}
+
 </stringProp>
+                <stringProp name="TestPlan.comments">This controller will compare the values in the pay end-point response, the callback response and the bill information for individual bill</stringProp>
               </JSR223Sampler>
               <hashTree/>
             </hashTree>
           </hashTree>
         </hashTree>
-        <DebugSampler guiclass="TestBeanGUI" testclass="DebugSampler" testname="Debug Sampler" enabled="true">
-          <boolProp name="displayJMeterProperties">false</boolProp>
-          <boolProp name="displayJMeterVariables">true</boolProp>
-          <boolProp name="displaySystemProperties">false</boolProp>
-        </DebugSampler>
-        <hashTree/>
+        <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="error validations" enabled="true">
+          <stringProp name="TestPlan.comments">This controller contains all the negative scenarios for the Setu APIs</stringProp>
+        </GenericController>
+        <hashTree>
+          <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="onboarding error validations" enabled="true"/>
+          <hashTree>
+            <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="onboard - 400 BadRequest" enabled="true"/>
+            <hashTree>
+              <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager_onboard" enabled="true">
+                <collectionProp name="HeaderManager.headers">
+                  <elementProp name="" elementType="Header">
+                    <stringProp name="Header.name">Content-Type</stringProp>
+                    <stringProp name="Header.value">application/json</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </HeaderManager>
+              <hashTree/>
+              <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="onboard_error_400" enabled="true">
+                <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+                <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                  <collectionProp name="Arguments.arguments">
+                    <elementProp name="" elementType="HTTPArgument">
+                      <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                      <stringProp name="Argument.value">{&#xd;
+	&quot;callBackURL&quot;: &quot;http://localhost:3000/api/test&quot;,&#xd;
+	&quot;name&quot;: &quot;ErrorPayer400&quot;&#xd;
+}</stringProp>
+                      <stringProp name="Argument.metadata">=</stringProp>
+                    </elementProp>
+                  </collectionProp>
+                </elementProp>
+                <stringProp name="HTTPSampler.domain">localhost</stringProp>
+                <stringProp name="HTTPSampler.port">3000</stringProp>
+                <stringProp name="HTTPSampler.protocol">http</stringProp>
+                <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+                <stringProp name="HTTPSampler.path">/api/onboard</stringProp>
+                <stringProp name="HTTPSampler.method">POST</stringProp>
+                <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+                <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+                <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+                <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+                <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+                <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+                <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              </HTTPSamplerProxy>
+              <hashTree/>
+              <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion - Response Code" enabled="true">
+                <collectionProp name="Asserion.test_strings">
+                  <stringProp name="51508">400</stringProp>
+                </collectionProp>
+                <stringProp name="Assertion.custom_message"></stringProp>
+                <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+                <boolProp name="Assertion.assume_success">true</boolProp>
+                <intProp name="Assertion.test_type">1</intProp>
+              </ResponseAssertion>
+              <hashTree/>
+              <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="JSON Assertion - error message" enabled="true">
+                <stringProp name="JSON_PATH">$..error</stringProp>
+                <stringProp name="EXPECTED_VALUE">data error</stringProp>
+                <boolProp name="JSONVALIDATION">true</boolProp>
+                <boolProp name="EXPECT_NULL">false</boolProp>
+                <boolProp name="INVERT">false</boolProp>
+                <boolProp name="ISREGEX">true</boolProp>
+              </JSONPathAssertion>
+              <hashTree/>
+            </hashTree>
+            <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="onboard - 404 NotFound" enabled="true"/>
+            <hashTree>
+              <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager_onboard" enabled="true">
+                <collectionProp name="HeaderManager.headers">
+                  <elementProp name="" elementType="Header">
+                    <stringProp name="Header.name">Content-Type</stringProp>
+                    <stringProp name="Header.value">application/json</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </HeaderManager>
+              <hashTree/>
+              <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="onboard_error_404" enabled="true">
+                <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+                <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                  <collectionProp name="Arguments.arguments">
+                    <elementProp name="" elementType="HTTPArgument">
+                      <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                      <stringProp name="Argument.value">{&#xd;
+	&quot;callBackURL&quot;: &quot;http://localhost:3000/api/test&quot;,&#xd;
+	&quot;name&quot;: &quot;ErrorPayer404&quot;&#xd;
+}</stringProp>
+                      <stringProp name="Argument.metadata">=</stringProp>
+                    </elementProp>
+                  </collectionProp>
+                </elementProp>
+                <stringProp name="HTTPSampler.domain">localhost</stringProp>
+                <stringProp name="HTTPSampler.port">3000</stringProp>
+                <stringProp name="HTTPSampler.protocol">http</stringProp>
+                <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+                <stringProp name="HTTPSampler.path">/api/onbord</stringProp>
+                <stringProp name="HTTPSampler.method">POST</stringProp>
+                <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+                <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+                <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+                <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+                <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+                <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+                <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              </HTTPSamplerProxy>
+              <hashTree/>
+              <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion - Response Code" enabled="true">
+                <collectionProp name="Asserion.test_strings">
+                  <stringProp name="51512">404</stringProp>
+                </collectionProp>
+                <stringProp name="Assertion.custom_message"></stringProp>
+                <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+                <boolProp name="Assertion.assume_success">true</boolProp>
+                <intProp name="Assertion.test_type">1</intProp>
+              </ResponseAssertion>
+              <hashTree/>
+            </hashTree>
+          </hashTree>
+          <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="payment error validations" enabled="true"/>
+          <hashTree>
+            <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="pay - Amount did not match" enabled="true"/>
+            <hashTree>
+              <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="pay" enabled="true"/>
+              <hashTree>
+                <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="pay_Amount mismatch" enabled="true">
+                  <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+                  <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                    <collectionProp name="Arguments.arguments">
+                      <elementProp name="" elementType="HTTPArgument">
+                        <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                        <stringProp name="Argument.value">{&#xd;
+	&quot;ifsc&quot;: &quot;${ifsc}&quot;,&#xd;
+	&quot;accountNumber&quot;: &quot;${accountNumber}&quot;,&#xd;
+	&quot;amount&quot;: 1001&#xd;
+}</stringProp>
+                        <stringProp name="Argument.metadata">=</stringProp>
+                      </elementProp>
+                    </collectionProp>
+                  </elementProp>
+                  <stringProp name="HTTPSampler.domain">localhost</stringProp>
+                  <stringProp name="HTTPSampler.port">3000</stringProp>
+                  <stringProp name="HTTPSampler.protocol">http</stringProp>
+                  <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+                  <stringProp name="HTTPSampler.path">/api/pay</stringProp>
+                  <stringProp name="HTTPSampler.method">POST</stringProp>
+                  <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+                  <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+                  <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+                  <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+                  <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+                  <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+                  <stringProp name="HTTPSampler.response_timeout"></stringProp>
+                </HTTPSamplerProxy>
+                <hashTree>
+                  <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor - pay_transactionId" enabled="true">
+                    <stringProp name="JSONPostProcessor.referenceNames">pay_transactionId</stringProp>
+                    <stringProp name="JSONPostProcessor.jsonPathExprs">$..transactionId</stringProp>
+                    <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+                    <stringProp name="JSONPostProcessor.defaultValues">No_TransactionId</stringProp>
+                  </JSONPostProcessor>
+                  <hashTree/>
+                  <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager_pay" enabled="true">
+                    <collectionProp name="HeaderManager.headers">
+                      <elementProp name="" elementType="Header">
+                        <stringProp name="Header.name">Content-Type</stringProp>
+                        <stringProp name="Header.value">application/json</stringProp>
+                      </elementProp>
+                      <elementProp name="" elementType="Header">
+                        <stringProp name="Header.name">PAYER-ID</stringProp>
+                        <stringProp name="Header.value">${PAYER-ID}</stringProp>
+                      </elementProp>
+                      <elementProp name="" elementType="Header">
+                        <stringProp name="Header.name">Authorization</stringProp>
+                        <stringProp name="Header.value">Bearer ${jwtToken}</stringProp>
+                      </elementProp>
+                    </collectionProp>
+                  </HeaderManager>
+                  <hashTree/>
+                </hashTree>
+              </hashTree>
+              <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="webhook.site" enabled="true"/>
+              <hashTree>
+                <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="webhook_get for Amount mismatch" enabled="true">
+                  <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+                    <collectionProp name="Arguments.arguments"/>
+                  </elementProp>
+                  <stringProp name="HTTPSampler.domain">webhook.site</stringProp>
+                  <stringProp name="HTTPSampler.port"></stringProp>
+                  <stringProp name="HTTPSampler.protocol">https</stringProp>
+                  <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+                  <stringProp name="HTTPSampler.path">/token/${webHookToken}/requests</stringProp>
+                  <stringProp name="HTTPSampler.method">GET</stringProp>
+                  <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+                  <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+                  <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+                  <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+                  <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+                  <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+                  <stringProp name="HTTPSampler.response_timeout"></stringProp>
+                </HTTPSamplerProxy>
+                <hashTree>
+                  <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor_callbackContent" enabled="true">
+                    <stringProp name="JSONPostProcessor.referenceNames">callbackContent</stringProp>
+                    <stringProp name="JSONPostProcessor.jsonPathExprs">$..content</stringProp>
+                    <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+                    <stringProp name="JSONPostProcessor.defaultValues">NONE</stringProp>
+                  </JSONPostProcessor>
+                  <hashTree/>
+                  <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="true">
+                    <stringProp name="ConstantTimer.delay">1500</stringProp>
+                  </ConstantTimer>
+                  <hashTree/>
+                </hashTree>
+                <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="webhook_delete for Amount mismatch" enabled="true">
+                  <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+                    <collectionProp name="Arguments.arguments"/>
+                  </elementProp>
+                  <stringProp name="HTTPSampler.domain">webhook.site</stringProp>
+                  <stringProp name="HTTPSampler.port"></stringProp>
+                  <stringProp name="HTTPSampler.protocol">https</stringProp>
+                  <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+                  <stringProp name="HTTPSampler.path">/token/${webHookToken}/request</stringProp>
+                  <stringProp name="HTTPSampler.method">DELETE</stringProp>
+                  <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+                  <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+                  <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+                  <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+                  <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+                  <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+                  <stringProp name="HTTPSampler.response_timeout"></stringProp>
+                </HTTPSamplerProxy>
+                <hashTree>
+                  <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor - callback_transactionId" enabled="true">
+                    <stringProp name="JSONPostProcessor.referenceNames">callback_transactionId</stringProp>
+                    <stringProp name="JSONPostProcessor.jsonPathExprs">$..transactionId</stringProp>
+                    <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+                    <stringProp name="Sample.scope">variable</stringProp>
+                    <stringProp name="Scope.variable">callbackContent</stringProp>
+                    <stringProp name="JSONPostProcessor.defaultValues">NO_VALUE</stringProp>
+                  </JSONPostProcessor>
+                  <hashTree/>
+                  <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor - callback_success" enabled="true">
+                    <stringProp name="JSONPostProcessor.referenceNames">callback_success</stringProp>
+                    <stringProp name="JSONPostProcessor.jsonPathExprs">$..success</stringProp>
+                    <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+                    <stringProp name="Sample.scope">variable</stringProp>
+                    <stringProp name="Scope.variable">callbackContent</stringProp>
+                    <stringProp name="JSONPostProcessor.defaultValues">NO_VALUE</stringProp>
+                  </JSONPostProcessor>
+                  <hashTree/>
+                  <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor - callback_error" enabled="true">
+                    <stringProp name="JSONPostProcessor.referenceNames">callback_error</stringProp>
+                    <stringProp name="JSONPostProcessor.jsonPathExprs">$..error</stringProp>
+                    <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+                    <stringProp name="Sample.scope">variable</stringProp>
+                    <stringProp name="Scope.variable">callbackContent</stringProp>
+                    <stringProp name="JSONPostProcessor.defaultValues">NO_VALUE</stringProp>
+                  </JSONPostProcessor>
+                  <hashTree/>
+                </hashTree>
+                <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler_Callback validations" enabled="true">
+                  <stringProp name="scriptLanguage">groovy</stringProp>
+                  <stringProp name="parameters"></stringProp>
+                  <stringProp name="filename"></stringProp>
+                  <stringProp name="cacheKey">true</stringProp>
+                  <stringProp name="script">def pay_transactionId = vars.get(&quot;pay_transactionId&quot;)
+def callback_transactionId = vars.get(&quot;callback_transactionId&quot;)
+def error = vars.get(&quot;callback_error&quot;)
+def success = vars.get(&quot;callback_success&quot;)
+
+StringBuilder successMessage = new StringBuilder()
+StringBuilder errorMessage = new StringBuilder()
+def errorFlag = false
+
+if (pay_transactionId.equals(callback_transactionId))
+{
+	successMessage.append(&quot;\nTransaction IDs are matching. \nPay response for Transaction ID = &quot; + pay_transactionId + &quot;\nCallback response for Transaction ID = &quot; + callback_transactionId)
+} else
+{
+	errorFlag = true
+	errorMessage.append(&quot;\nTransaction IDs are NOT matching! \nPay response for Transaction ID = &quot; + pay_transactionId + &quot;\nCallback response for Transaction ID = &quot; + callback_transactionId)
+}
+
+if (success.equals(&quot;false&quot;))
+{
+	successMessage.append(&quot;\nExpected Callback response for Success value. \nCallback response for Success = &quot; + success)
+} else
+{
+	errorFlag = true
+	errorMessage.append(&quot;\nUnexpected Callback response for Success value! \nCallback response for Success = &quot; + success)
+}
+
+if (error.equals(&quot;Amount did not match&quot;))
+{
+	successMessage.append(&quot;\nExpected Callback response for Error value. \nCallback response for Error = &quot; + error)
+} else
+{
+	errorFlag = true
+	errorMessage.append(&quot;\nUnexpected Callback response for Error value! \nCallback response for Error = &quot; + error)
+}
+
+
+if (errorFlag)
+{
+	SampleResult.setSuccessful(false)
+	SampleResult.setResponseData(errorMessage.toString())
+	SampleResult.setResponseMessage(&quot;Callback validation failed. See response data for more details&quot;)
+} else 
+{
+	SampleResult.setResponseData(successMessage.toString())	
+}
+
+</stringProp>
+                </JSR223Sampler>
+                <hashTree/>
+              </hashTree>
+            </hashTree>
+            <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="pay_Bill not found" enabled="true"/>
+            <hashTree>
+              <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="pay" enabled="true"/>
+              <hashTree>
+                <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="pay_Bill not found" enabled="true">
+                  <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+                  <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                    <collectionProp name="Arguments.arguments">
+                      <elementProp name="" elementType="HTTPArgument">
+                        <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                        <stringProp name="Argument.value">{&#xd;
+	&quot;ifsc&quot;: &quot;TestIFSC&quot;,&#xd;
+	&quot;accountNumber&quot;: &quot;10&quot;,&#xd;
+	&quot;amount&quot;: 1&#xd;
+}</stringProp>
+                        <stringProp name="Argument.metadata">=</stringProp>
+                      </elementProp>
+                    </collectionProp>
+                  </elementProp>
+                  <stringProp name="HTTPSampler.domain">localhost</stringProp>
+                  <stringProp name="HTTPSampler.port">3000</stringProp>
+                  <stringProp name="HTTPSampler.protocol">http</stringProp>
+                  <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+                  <stringProp name="HTTPSampler.path">/api/pay</stringProp>
+                  <stringProp name="HTTPSampler.method">POST</stringProp>
+                  <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+                  <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+                  <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+                  <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+                  <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+                  <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+                  <stringProp name="HTTPSampler.response_timeout"></stringProp>
+                </HTTPSamplerProxy>
+                <hashTree>
+                  <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor - pay_transactionId" enabled="true">
+                    <stringProp name="JSONPostProcessor.referenceNames">pay_transactionId</stringProp>
+                    <stringProp name="JSONPostProcessor.jsonPathExprs">$..transactionId</stringProp>
+                    <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+                    <stringProp name="JSONPostProcessor.defaultValues">No_TransactionId</stringProp>
+                  </JSONPostProcessor>
+                  <hashTree/>
+                  <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager_pay" enabled="true">
+                    <collectionProp name="HeaderManager.headers">
+                      <elementProp name="" elementType="Header">
+                        <stringProp name="Header.name">Content-Type</stringProp>
+                        <stringProp name="Header.value">application/json</stringProp>
+                      </elementProp>
+                      <elementProp name="" elementType="Header">
+                        <stringProp name="Header.name">PAYER-ID</stringProp>
+                        <stringProp name="Header.value">${PAYER-ID}</stringProp>
+                      </elementProp>
+                      <elementProp name="" elementType="Header">
+                        <stringProp name="Header.name">Authorization</stringProp>
+                        <stringProp name="Header.value">Bearer ${jwtToken}</stringProp>
+                      </elementProp>
+                    </collectionProp>
+                  </HeaderManager>
+                  <hashTree/>
+                </hashTree>
+              </hashTree>
+              <GenericController guiclass="LogicControllerGui" testclass="GenericController" testname="webhook.site" enabled="true">
+                <stringProp name="TestPlan.comments">This controller will take the successful onboard response for validations</stringProp>
+              </GenericController>
+              <hashTree>
+                <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="webhook_get for Bill not found" enabled="true">
+                  <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+                    <collectionProp name="Arguments.arguments"/>
+                  </elementProp>
+                  <stringProp name="HTTPSampler.domain">webhook.site</stringProp>
+                  <stringProp name="HTTPSampler.port"></stringProp>
+                  <stringProp name="HTTPSampler.protocol">https</stringProp>
+                  <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+                  <stringProp name="HTTPSampler.path">/token/${webHookToken}/requests</stringProp>
+                  <stringProp name="HTTPSampler.method">GET</stringProp>
+                  <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+                  <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+                  <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+                  <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+                  <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+                  <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+                  <stringProp name="HTTPSampler.response_timeout"></stringProp>
+                </HTTPSamplerProxy>
+                <hashTree>
+                  <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor_callbackContent" enabled="true">
+                    <stringProp name="JSONPostProcessor.referenceNames">callbackContent</stringProp>
+                    <stringProp name="JSONPostProcessor.jsonPathExprs">$..content</stringProp>
+                    <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+                    <stringProp name="JSONPostProcessor.defaultValues">NONE</stringProp>
+                  </JSONPostProcessor>
+                  <hashTree/>
+                  <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="true">
+                    <stringProp name="ConstantTimer.delay">1500</stringProp>
+                  </ConstantTimer>
+                  <hashTree/>
+                </hashTree>
+                <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="webhook_delete for Bill not found" enabled="true">
+                  <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+                    <collectionProp name="Arguments.arguments"/>
+                  </elementProp>
+                  <stringProp name="HTTPSampler.domain">webhook.site</stringProp>
+                  <stringProp name="HTTPSampler.port"></stringProp>
+                  <stringProp name="HTTPSampler.protocol">https</stringProp>
+                  <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+                  <stringProp name="HTTPSampler.path">/token/${webHookToken}/request</stringProp>
+                  <stringProp name="HTTPSampler.method">DELETE</stringProp>
+                  <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+                  <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+                  <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+                  <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+                  <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+                  <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+                  <stringProp name="HTTPSampler.response_timeout"></stringProp>
+                </HTTPSamplerProxy>
+                <hashTree>
+                  <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor - callback_transactionId" enabled="true">
+                    <stringProp name="JSONPostProcessor.referenceNames">callback_transactionId</stringProp>
+                    <stringProp name="JSONPostProcessor.jsonPathExprs">$..transactionId</stringProp>
+                    <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+                    <stringProp name="Sample.scope">variable</stringProp>
+                    <stringProp name="Scope.variable">callbackContent</stringProp>
+                    <stringProp name="JSONPostProcessor.defaultValues">NO_VALUE</stringProp>
+                  </JSONPostProcessor>
+                  <hashTree/>
+                  <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor - callback_success" enabled="true">
+                    <stringProp name="JSONPostProcessor.referenceNames">callback_success</stringProp>
+                    <stringProp name="JSONPostProcessor.jsonPathExprs">$..success</stringProp>
+                    <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+                    <stringProp name="Sample.scope">variable</stringProp>
+                    <stringProp name="Scope.variable">callbackContent</stringProp>
+                    <stringProp name="JSONPostProcessor.defaultValues">NO_VALUE</stringProp>
+                  </JSONPostProcessor>
+                  <hashTree/>
+                  <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor - callback_error" enabled="true">
+                    <stringProp name="JSONPostProcessor.referenceNames">callback_error</stringProp>
+                    <stringProp name="JSONPostProcessor.jsonPathExprs">$..error</stringProp>
+                    <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+                    <stringProp name="Sample.scope">variable</stringProp>
+                    <stringProp name="Scope.variable">callbackContent</stringProp>
+                    <stringProp name="JSONPostProcessor.defaultValues">NO_VALUE</stringProp>
+                  </JSONPostProcessor>
+                  <hashTree/>
+                </hashTree>
+                <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="JSR223 Sampler_Callback validations" enabled="true">
+                  <stringProp name="scriptLanguage">groovy</stringProp>
+                  <stringProp name="parameters"></stringProp>
+                  <stringProp name="filename"></stringProp>
+                  <stringProp name="cacheKey">true</stringProp>
+                  <stringProp name="script">def pay_transactionId = vars.get(&quot;pay_transactionId&quot;)
+def callback_transactionId = vars.get(&quot;callback_transactionId&quot;)
+def error = vars.get(&quot;callback_error&quot;)
+def success = vars.get(&quot;callback_success&quot;)
+
+StringBuilder successMessage = new StringBuilder()
+StringBuilder errorMessage = new StringBuilder()
+def errorFlag = false
+
+if (pay_transactionId.equals(callback_transactionId))
+{
+	successMessage.append(&quot;\nTransaction IDs are matching. \nPay response for Transaction ID = &quot; + pay_transactionId + &quot;\nCallback response for Transaction ID = &quot; + callback_transactionId)
+} else
+{
+	errorFlag = true
+	errorMessage.append(&quot;\nTransaction IDs are NOT matching! \nPay response for Transaction ID = &quot; + pay_transactionId + &quot;\nCallback response for Transaction ID = &quot; + callback_transactionId)
+}
+
+if (success.equals(&quot;false&quot;))
+{
+	successMessage.append(&quot;\nExpected Callback response for Success value. \nCallback response for Success = &quot; + success)
+} else
+{
+	errorFlag = true
+	errorMessage.append(&quot;\nUnexpected Callback response for Success value! \nCallback response for Success = &quot; + success)
+}
+
+if (error.equals(&quot;Bill not found&quot;))
+{
+	successMessage.append(&quot;\nExpected Callback response for Error value. \nCallback response for Error = &quot; + error)
+} else
+{
+	errorFlag = true
+	errorMessage.append(&quot;\nUnexpected Callback response for Error value! \nCallback response for Error = &quot; + error)
+}
+
+
+if (errorFlag)
+{
+	SampleResult.setSuccessful(false)
+	SampleResult.setResponseData(errorMessage.toString())
+	SampleResult.setResponseMessage(&quot;Callback validation failed. See response data for more details&quot;)
+} else 
+{
+	SampleResult.setResponseData(successMessage.toString())	
+}
+
+</stringProp>
+                </JSR223Sampler>
+                <hashTree/>
+              </hashTree>
+            </hashTree>
+          </hashTree>
+        </hashTree>
       </hashTree>
       <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
         <boolProp name="ResultCollector.error_logging">false</boolProp>
@@ -414,27 +1027,30 @@ if (pay_transactionId.equals(callback_transactionId))
             <message>true</message>
             <threadName>true</threadName>
             <dataType>true</dataType>
-            <encoding>false</encoding>
+            <encoding>true</encoding>
             <assertions>true</assertions>
             <subresults>true</subresults>
-            <responseData>false</responseData>
-            <samplerData>false</samplerData>
-            <xml>false</xml>
+            <responseData>true</responseData>
+            <samplerData>true</samplerData>
+            <xml>true</xml>
             <fieldNames>true</fieldNames>
-            <responseHeaders>false</responseHeaders>
-            <requestHeaders>false</requestHeaders>
+            <responseHeaders>true</responseHeaders>
+            <requestHeaders>true</requestHeaders>
             <responseDataOnError>false</responseDataOnError>
             <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
             <assertionsResultsToSave>0</assertionsResultsToSave>
             <bytes>true</bytes>
             <sentBytes>true</sentBytes>
             <url>true</url>
+            <fileName>true</fileName>
+            <hostname>true</hostname>
             <threadCounts>true</threadCounts>
+            <sampleCount>true</sampleCount>
             <idleTime>true</idleTime>
             <connectTime>true</connectTime>
           </value>
         </objProp>
-        <stringProp name="filename"></stringProp>
+        <stringProp name="filename">&lt;file-path&gt;\jmeter-setu-challenge\RunResult.xml</stringProp>
       </ResultCollector>
       <hashTree/>
     </hashTree>
